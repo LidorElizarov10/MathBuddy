@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathBuddy - מתמטיקה בכיף</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Heebo', sans-serif; }
+        .animate-bounce-slow { animation: bounce 2s infinite; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🤖</span>
+                <h1 class="text-2xl font-bold">MathBuddy</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#home" class="hover:text-yellow-300 transition-colors">בית</a>
+                <a href="#practice" class="hover:text-yellow-300 transition-colors">תרגול</a>
+                <a href="#dashboard" class="hover:text-yellow-300 transition-colors">דשבורד</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-6">
+        <!-- Welcome Section -->
+        <section id="home" class="text-center mb-8">
+            <div class="bg-white rounded-3xl p-8 card-shadow mb-6">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">שלום נועה! 👋</h2>
+                <div class="flex justify-center items-center space-x-8 mb-6">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-yellow-500" id="stars-count">127</div>
+                        <div class="text-sm text-gray-600">⭐ כוכבים</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-green-500" id="streak-count">5</div>
+                        <div class="text-sm text-gray-600">🔥 ימים ברצף</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-purple-500" id="level">3</div>
+                        <div class="text-sm text-gray-600">🏆 רמה</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>התקדמות לרמה הבאה</span>
+                        <span id="progress-text">75/100 XP</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all duration-500" style="width: 75%" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Daily Challenge -->
+                <div class="bg-gradient-to-r from-orange-400 to-pink-400 rounded-2xl p-4 text-white mb-4">
+                    <h3 class="font-bold mb-2">🎯 אתגר יומי</h3>
+                    <p class="text-sm mb-3">פתרי 5 תרגילי חיבור וקבלי 20 כוכבים!</p>
+                    <button onclick="startDailyChallenge()" class="bg-white text-orange-500 px-4 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                        התחל עכשיו
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section -->
+        <section id="practice" class="mb-8">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Chat Bot -->
+                <div class="bg-white rounded-3xl p-6 card-shadow">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <span class="text-2xl ml-2">🤖</span>
+                        שיחה עם MathBot
+                    </h3>
+                    
+                    <div class="bg-gray-50 rounded-2xl p-4 h-64 overflow-y-auto mb-4" id="chat-container">
+                        <div class="flex items-start mb-3">
+                            <div class="bg-blue-500 text-white rounded-2xl p-3 max-w-xs">
+                                שלום נועה! בואי נתרגל חיבור. מה זה 15 + 8?
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <input type="text" id="chat-input" placeholder="הקלידי את התשובה..." 
+                               class="flex-1 p-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="sendMessage()" class="bg-blue-500 text-white px-6 py-3 rounded-2xl hover:bg-blue-600 transition-colors">
+                            שלח
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Practice -->
+                <div class="bg-white rounded-3xl p-6 card-shadow">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <span class="text-2xl ml-2">⚡</span>
+                        תרגול מהיר
+                    </h3>
+                    
+                    <div class="text-center mb-6">
+                        <div class="text-4xl font-bold text-gray-800 mb-2" id="question">12 + 7 = ?</div>
+                        <div class="text-sm text-gray-600">שאלה <span id="question-num">1</span> מתוך 5</div>
+                        
+                        <!-- Progress Bar for Questions -->
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width: 20%" id="question-progress"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button onclick="selectAnswer(15)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">15</button>
+                        <button onclick="selectAnswer(19)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">19</button>
+                        <button onclick="selectAnswer(18)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">18</button>
+                        <button onclick="selectAnswer(20)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">20</button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-lg font-bold text-green-600" id="correct-count">תשובות נכונות: 0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="mb-8">
+            <div class="bg-white rounded-3xl p-6 card-shadow">
+                <h3 class="text-xl font-bold mb-6 flex items-center">
+                    <span class="text-2xl ml-2">📊</span>
+                    דשבורד התקדמות
+                </h3>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Weekly Progress -->
+                    <div class="text-center">
+                        <h4 class="font-bold mb-3">השבוע</h4>
+                        <div class="text-3xl font-bold text-blue-500 mb-2">85%</div>
+                        <div class="text-sm text-gray-600">דיוק תשובות</div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Strengths -->
+                    <div class="text-center">
+                        <h4 class="font-bold mb-3">חוזקות</h4>
+                        <div class="space-y-2">
+                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">חיבור ✓</div>
+                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">מספרים קטנים ✓</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Areas to Improve -->
+                    <div class="text-center">
+                        <h4 class="font-bold mb-3">לשיפור</h4>
+                        <div class="space-y-2">
+                            <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">חיסור</div>
+                            <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">מספרים גדולים</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h4 class="font-bold mb-3">פעילות אחרונה</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span>אתגר יומי - חיבור</span>
+                            <span class="text-green-600 font-bold">4/5 ✓</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span>תרגול חופשי</span>
+                            <span class="text-blue-600 font-bold">+15 כוכבים</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="mb-8">
+            <div class="bg-white rounded-3xl p-6 card-shadow">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <span class="text-2xl ml-2">🏅</span>
+                    הישגים
+                </h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-yellow-50 rounded-2xl">
+                        <div class="text-3xl mb-2">🌟</div>
+                        <div class="font-bold text-sm">כוכב ראשון</div>
+                        <div class="text-xs text-gray-600">השג 10 כוכבים</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-2xl">
+                        <div class="text-3xl mb-2">🔥</div>
+                        <div class="font-bold text-sm">רצף של 5</div>
+                        <div class="text-xs text-gray-600">5 ימים ברצף</div>
+                    </div>
+                    <div class="text-center p-4 bg-blue-50 rounded-2xl">
+                        <div class="text-3xl mb-2">🎯</div>
+                        <div class="font-bold text-sm">מדויק</div>
+                        <div class="text-xs text-gray-600">10 תשובות נכונות ברצף</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-100 rounded-2xl opacity-50">
+                        <div class="text-3xl mb-2">👑</div>
+                        <div class="font-bold text-sm">מלך המתמטיקה</div>
+                        <div class="text-xs text-gray-600">השג רמה 5</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Fake Data
+        let userData = {
+            stars: 127,
+            streak: 5,
+            level: 3,
+            xp: 75,
+            correctAnswers: 0,
+            currentQuestion: 1,
+            totalQuestions: 5
+        };
+
+        let questions = [
+            {question: "12 + 7 = ?", answers: [15, 19, 18, 20], correct: 19},
+            {question: "25 - 8 = ?", answers: [17, 16, 18, 15], correct: 17},
+            {question: "9 + 6 = ?", answers: [14, 15, 16, 13], correct: 15},
+            {question: "20 - 5 = ?", answers: [15, 14, 16, 13], correct: 15},
+            {question: "8 + 9 = ?", answers: [16, 17, 18, 15], correct: 17}
+        ];
+
+        let currentQuestionIndex = 0;
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatContainer = document.getElementById('chat-container');
+            
+            // Add user message
+            chatContainer.innerHTML += `
+                <div class="flex justify-end mb-3">
+                    <div class="bg-green-500 text-white rounded-2xl p-3 max-w-xs">
+                        ${message}
+                    </div>
+                </div>
+            `;
+
+            // Simulate bot response
+            setTimeout(() => {
+                let botResponse = "";
+                if (message === "23") {
+                    botResponse = "מעולה! 15 + 8 = 23. בואי ננסה עוד אחד: מה זה 20 - 7?";
+                    userData.stars += 5;
+                    updateStarsDisplay();
+                } else {
+                    botResponse = "לא בדיוק... בואי ננסה שוב. רמז: ספרי על האצבעות!";
+                }
+                
+                chatContainer.innerHTML += `
+                    <div class="flex items-start mb-3">
+                        <div class="bg-blue-500 text-white rounded-2xl p-3 max-w-xs">
+                            ${botResponse}
+                        </div>
+                    </div>
+                `;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1000);
+
+            input.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Quick practice functionality
+        function selectAnswer(answer) {
+            const currentQ = questions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.answer-btn');
+            
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (parseInt(btn.textContent) === currentQ.correct) {
+                    btn.classList.add('bg-green-500', 'text-white');
+                } else if (parseInt(btn.textContent) === answer && answer !== currentQ.correct) {
+                    btn.classList.add('bg-red-500', 'text-white');
+                }
+            });
+
+            if (answer === currentQ.correct) {
+                userData.correctAnswers++;
+                userData.stars += 3;
+                updateStarsDisplay();
+                document.getElementById('correct-count').textContent = `תשובות נכונות: ${userData.correctAnswers}`;
+            }
+
+            setTimeout(() => {
+                nextQuestion();
+            }, 1500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+                // End of quiz
+                document.getElementById('question').textContent = `סיימת! ${userData.correctAnswers}/${questions.length} נכון!`;
+                document.querySelector('.grid.grid-cols-2.gap-3').innerHTML = `
+                    <button onclick="restartQuiz()" class="col-span-2 bg-blue-500 text-white p-4 rounded-2xl font-bold hover:bg-blue-600 transition-colors">
+                        התחל מחדש
+                    </button>
+                `;
+                return;
+            }
+
+            const currentQ = questions[currentQuestionIndex];
+            document.getElementById('question').textContent = currentQ.question;
+            document.getElementById('question-num').textContent = currentQuestionIndex + 1;
+            
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('question-progress').style.width = progress + '%';
+
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach((btn, index) => {
+                btn.textContent = currentQ.answers[index];
+                btn.disabled = false;
+                btn.className = 'bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn';
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userData.correctAnswers = 0;
+            document.getElementById('correct-count').textContent = 'תשובות נכונות: 0';
+            
+            const currentQ = questions[0];
+            document.getElementById('question').textContent = currentQ.question;
+            document.getElementById('question-num').textContent = '1';
+            document.getElementById('question-progress').style.width = '20%';
+
+            document.querySelector('.grid.grid-cols-2.gap-3').innerHTML = `
+                <button onclick="selectAnswer(15)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">15</button>
+                <button onclick="selectAnswer(19)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">19</button>
+                <button onclick="selectAnswer(18)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">18</button>
+                <button onclick="selectAnswer(20)" class="bg-gray-100 hover:bg-blue-100 p-4 rounded-2xl font-bold transition-colors answer-btn">20</button>
+            `;
+        }
+
+        function startDailyChallenge() {
+            alert('אתגר יומי מתחיל! 🎯');
+            // Here would be the daily challenge logic
+        }
+
+        function updateStarsDisplay() {
+            document.getElementById('stars-count').textContent = userData.stars;
+        }
+
+        // Chat input enter key
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
